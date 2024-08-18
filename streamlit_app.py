@@ -79,7 +79,7 @@ with st.form(key="vendor_form"):
         if not Name or not Phone or not Distributor or not Dealer or not City or not Dateofdisplay or not InvoiceDoc or not DisplayImage:
             st.warning("Ensure all mandatory fields are filled.")
             st.stop()
-        elif existing_data["Phone"] in Phone:
+        elif ["Phone"] in Phone:
             st.warning("Phone number already exists.")
             st.stop()
         else:
