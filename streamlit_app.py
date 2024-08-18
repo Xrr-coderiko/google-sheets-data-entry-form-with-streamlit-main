@@ -3,7 +3,7 @@ from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 
 # Display Title and Description
-st.image("./VOXlogo.jpeg",width=250)
+st.image("./VOXlogo.jpeg",width=500,)
 st.title("VOX Dealership form")
 st.markdown("Enter the details of the new vendor below.")
 
