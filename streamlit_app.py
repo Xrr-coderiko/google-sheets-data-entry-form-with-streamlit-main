@@ -83,7 +83,8 @@ with st.form(key="vendor_form"):
              if not is_valid:
               st.warning("Incorrect Phone Number.")
              elif Phone in existing_data["Phone"].astype(str).values:
-              st.warning("Phone number already exists.")             
+              st.warning("Phone number already exists.") 
+              st.stop()            
         else:
             # Create a new row of vendor data
             vendor_data = pd.DataFrame(
