@@ -75,16 +75,14 @@ with st.form(key="vendor_form"):
     if submit_button:
         # Check if all mandatory fields are filled
         pattern = re.compile(r"^[6-9]\d{9}$")
-        is_valid = bool(pattern.match(Phone))
-        st.warning("Incorrect Phone Number.") 
         if not Name or not Phone or not Distributor or not Dealer or not City or not Dateofdisplay or not InvoiceDoc or not DisplayImage:
             st.warning("Ensure all mandatory fields are filled.")
             st.stop()
+        elif Phone:
+             is_valid = bool(pattern.match(Phone))
+             st.warning("Incorrect Phone Number.") 
         elif Phone in existing_data["Phone"].astype(str).values:
               st.warning("Phone number already exists.")                
-        #elif existing_data["Phone"] == Phone:
-         #   st.warning("Phone number already exists.")
-          #  st.stop()
         else:
             # Create a new row of vendor data
             vendor_data = pd.DataFrame(
