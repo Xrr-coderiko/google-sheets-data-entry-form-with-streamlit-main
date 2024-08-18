@@ -11,16 +11,22 @@ st.markdown("Enter the details of the new vendor below.")
 conn = st.connection("gsheets", type=GSheetsConnection)
 
 # Fetch existing vendors data
-existing_data = conn.read(worksheet="dealer", usecols=list(range(6)), ttl=5)
+existing_data = conn.read(worksheet="dealer", usecols=list(range(13)), ttl=5)
 existing_data = existing_data.dropna(how="all")
 
 # List of Business Types and Products
-BUSINESS_TYPES = [
-    "Manufacturer",
-    "Distributor",
-    "Wholesaler",
-    "Retailer",
-    "Service Provider",
+COLORS = [
+    "Walnut",
+    "White",
+    "Black",
+    "Golden Oak",
+    "Basalt Oak",
+    "Rosewood",
+    "Dark Mahagany",
+    "Oak",
+    "Oak Winchester",
+    "Brown",
+    "Graphite",
 ]
 PRODUCTS = [
     "Soffit",
@@ -34,14 +40,28 @@ PRODUCTS = [
     "T Trims",
 ]
 
+SIZES = [
+    "8.71",
+    "12.43",
+    "7.9",
+    "10.3",
+]
+
 # Onboarding New Vendor Form
 with st.form(key="vendor_form"):
-    company_name = st.text_input(label="Company Name*")
-    business_type = st.selectbox("Business Type*", options=BUSINESS_TYPES, index=None)
-    products = st.multiselect("Products Offered", options=PRODUCTS)
-    years_in_business = st.slider("Years in Business", 0, 50, 5)
-    onboarding_date = st.date_input(label="Onboarding Date")
-    additional_info = st.text_area(label="Additional Notes")
+    Name = st.text_input(label="Indent Raised By")
+    Email = st.text_input(lable="Email ID")
+    Phone = st.time_input(label="Phone No.")
+    Distributor = st.text_input(label="Distributor Name")
+    Dealer = st.text_input(label="Dealer Name")
+    City = st.text_input(label="City")
+    products = st.multiselect("Products", options=PRODUCTS)
+    colors = st.multiselect("Decor", options=COLORS)
+    Size = st.multiselect("Panel sizes", options=SIZES)
+    Quantity = st.text_input(label="Quantity of panels")
+    Dateofdisplay = st.date_input(label="Date of display executed")
+    InvoiceDoc = st.file_uploader(label="Upload Invoice copy")
+    DisplayImage = st.file_uploader(label="Upload Display images")
 
     # Mark mandatory fields
     st.markdown("**required*")
@@ -51,10 +71,10 @@ with st.form(key="vendor_form"):
     # If the submit button is pressed
     if submit_button:
         # Check if all mandatory fields are filled
-        if not company_name or not business_type:
+        if not Name or not Phone or not Distributor or not Dealer or not City or not Dateofdisplay or not InvoiceDoc or not DisplayImage:
             st.warning("Ensure all mandatory fields are filled.")
             st.stop()
-        elif existing_data["Name"].str.contains(company_name).any():
+        elif existing_data["Phone"].str.contains(Phone).any():
             st.warning("A vendor with this company name already exists.")
             st.stop()
         else:
@@ -62,12 +82,19 @@ with st.form(key="vendor_form"):
             vendor_data = pd.DataFrame(
                 [
                     {
-                        "Name": company_name,
-                        "BusinessType": business_type,
+                        "Name": Name,
+                        "Email": Email,
+                        "Phone": Phone,
+                        "Distributor": Distributor,
+                        "Dealer": Dealer,
+                        "City": City,
                         "Products": ", ".join(products),
-                        "YearsInBusiness": years_in_business,
-                        "OnboardingDate": onboarding_date.strftime("%Y-%m-%d"),
-                        "AdditionalInfo": additional_info,
+                        "Colors": ", ".join(products),
+                        "Sizes": ", ".join(products),
+                        "Quantity": Quantity,
+                        "Display date": Dateofdisplay.strftime("%Y-%m-%d"),
+                        "Invoice": InvoiceDoc,
+                        "Display Image": DisplayImage, 
                     }
                 ]
             )

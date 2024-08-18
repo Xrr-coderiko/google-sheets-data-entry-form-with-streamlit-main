@@ -6,12 +6,18 @@ import pandas as pd
 st.title("VOX Dealership form")
 
 # Constants
-BUSINESS_TYPES = [
-    "Manufacturer",
-    "Distributor",
-    "Wholesaler",
-    "Retailer",
-    "Service Provider",
+COLORS = [
+    "Walnut",
+    "White",
+    "Black",
+    "Golden Oak",
+    "Basalt Oak",
+    "Rosewood",
+    "Dark Mahagany",
+    "Oak",
+    "Oak Winchester",
+    "Brown",
+    "Graphite",
 ]
 PRODUCTS = [
     "Soffit",
@@ -23,6 +29,13 @@ PRODUCTS = [
     "Espumo",
     "J Trims",
     "T Trims",
+]
+
+SIZES = [
+    "8.71",
+    "12.43",
+    "7.9",
+    "10.3",
 ]
 
 # Establishing a Google Sheets connection
@@ -45,17 +58,22 @@ action = st.selectbox(
 if action == "Onboard New Vendor":
     st.markdown("Enter the details of the new vendor below.")
     with st.form(key="vendor_form"):
-        company_name = st.text_input(label="Company Name*")
-        business_type = st.selectbox(
-            "Business Type*", options=BUSINESS_TYPES, index=None
-        )
-        products = st.multiselect("Products Offered", options=PRODUCTS)
-        years_in_business = st.slider("Years in Business", 0, 50, 5)
-        onboarding_date = st.date_input(label="Onboarding Date")
-        additional_info = st.text_area(label="Additional Notes")
+        Name = st.text_input(label="Indent Raised By")
+        Email = st.text_input(lable="Email ID")
+        Phone = st.time_input(label="Phone No.")
+        Distributor = st.text_input(label="Distributor Name")
+        Dealer = st.text_input(label="Dealer Name")
+        City = st.text_input(label="City")
+        products = st.multiselect("Products", options=PRODUCTS)
+        colors = st.multiselect("Decor", options=COLORS)
+        Size = st.multiselect("Panel sizes", options=SIZES)
+        Quantity = st.text_input(label="Quantity of panels")
+        Dateofdisplay = st.date_input(label="Date of display executed")
+        InvoiceDoc = st.file_uploader(label="Upload Invoice copy")
+        DisplayImage = st.file_uploader(label="Upload Display images")
 
         st.markdown("**required*")
-        submit_button = st.form_submit_button(label="Submit Vendor Details")
+        submit_button = st.form_submit_button(label="Submit Details")
 
         if submit_button:
             if not company_name or not business_type:
