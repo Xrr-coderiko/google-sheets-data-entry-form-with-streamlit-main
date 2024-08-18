@@ -81,7 +81,7 @@ with st.form(key="vendor_form"):
             st.warning("Ensure all mandatory fields are filled.")
             st.stop()
         is_valid = bool(pattern.match(Phone))
-        if not is_valid or Phone in existing_data["Phone"].astype(str).values:
+        if not is_valid and Phone in existing_data["Phone"].astype(str).values:
             st.warning("Incorrect Phone Number or already exist.")
             #if Phone in existing_data["Phone"].astype(str).values:
              # st.warning("Phone number already exists.")           
