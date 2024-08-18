@@ -51,7 +51,7 @@ SIZES = [
 with st.form(key="vendor_form"):
     Name = st.text_input(label="Indent Raised By")
     Email = st.text_input(label="Email ID")
-    Phone = st.time_input(label="Phone No.")
+    Phone = st.text_input(label="Phone No")
     Distributor = st.text_input(label="Distributor Name")
     Dealer = st.text_input(label="Dealer Name")
     City = st.text_input(label="City")
