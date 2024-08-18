@@ -76,15 +76,14 @@ with st.form(key="vendor_form"):
     # If the submit button is pressed
     if submit_button:
         # Check if all mandatory fields are filled
-    
+        is_valid = bool(pattern.match(Phone))
         if not Name or not Phone or not Distributor or not Dealer or not City or not Dateofdisplay or not InvoiceDoc or not DisplayImage:
             st.warning("Ensure all mandatory fields are filled.")
             st.stop()
-        is_valid = bool(pattern.match(Phone))
-        if not is_valid and Phone in existing_data["Phone"].astype(str).values:
+        elif not is_valid:
             st.warning("Incorrect Phone Number or already exist.")
-            #if Phone in existing_data["Phone"].astype(str).values:
-             # st.warning("Phone number already exists.")           
+        elif Phone in existing_data["Phone"].astype(str).values:
+            st.warning("Phone number already exists.")           
         else:
             # Create a new row of vendor data
             vendor_data = pd.DataFrame(
