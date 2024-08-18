@@ -82,7 +82,6 @@ with st.form(key="vendor_form"):
              is_valid = bool(pattern.match(Phone))
              if not is_valid:
               st.warning("Incorrect Phone Number.")
-              st.stop
              elif Phone in existing_data["Phone"].astype(str).values:
               st.warning("Phone number already exists.")             
         else:
