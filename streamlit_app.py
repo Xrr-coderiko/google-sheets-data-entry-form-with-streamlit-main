@@ -49,6 +49,8 @@ SIZES = [
     "10.3",
 ]
 
+pattern = re.compile(r"^[6-9]\d{9}$")
+
 # Onboarding New Vendor Form
 with st.form(key="vendor_form"):
     Name = st.text_input(label="Indent Raised By*")
@@ -74,7 +76,7 @@ with st.form(key="vendor_form"):
     # If the submit button is pressed
     if submit_button:
         # Check if all mandatory fields are filled
-        pattern = re.compile(r"^[6-9]\d{9}$")
+    
         if not Name or not Phone or not Distributor or not Dealer or not City or not Dateofdisplay or not InvoiceDoc or not DisplayImage:
             st.warning("Ensure all mandatory fields are filled.")
             st.stop()
