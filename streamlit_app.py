@@ -1,11 +1,12 @@
 import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 import pandas as pd
+import re
 
 # Display Title and Description
 # st.image("./VOXlogo.jpeg",width=500,)
-st.title("VOX Dealership form")
-st.markdown("Enter the details of the new vendor below.")
+st.title("VOX Dealer Display")
+st.markdown("Details to collect Credit Note")
 
 # Establishing a Google Sheets connection
 conn = st.connection("gsheets", type=GSheetsConnection)
@@ -49,22 +50,25 @@ SIZES = [
 
 # Onboarding New Vendor Form
 with st.form(key="vendor_form"):
-    Name = st.text_input(label="Indent Raised By")
+    Name = st.text_input(label="Indent Raised By*")
     Email = st.text_input(label="Email ID")
-    Phone = st.text_input(label="Phone No")
-    Distributor = st.text_input(label="Distributor Name")
-    Dealer = st.text_input(label="Dealer Name")
-    City = st.text_input(label="City")
-    products = st.multiselect("Products", options=PRODUCTS)
-    colors = st.multiselect("Decor", options=COLORS)
-    Size = st.multiselect("Panel sizes", options=SIZES)
-    Quantity = st.text_input(label="Quantity of panels")
-    Dateofdisplay = st.date_input(label="Date of display executed")
-    InvoiceDoc = st.file_uploader(label="Upload Invoice copy")
-    DisplayImage = st.file_uploader(label="Upload Display images")
+    Phone = st.text_input(label="Phone No*")
+    Distributor = st.text_input(label="Distributor Name*")
+    Dealer = st.text_input(label="Dealer Name*")
+    City = st.text_input(label="City*")
+    products = st.multiselect("Products*", options=PRODUCTS)
+    colors = st.multiselect("Decor*", options=COLORS)
+    Size = st.multiselect("Panel sizes*", options=SIZES)
+    Quantity = st.text_input(label="Quantity of panels*")
+    Dateofdisplay = st.date_input(label="Date of display executed*")
+    InvoiceDoc = st.file_uploader(label="Upload Invoice copy*")
+    DisplayImage = st.file_uploader(label="Upload Display images*")
 
     # Mark mandatory fields
     st.markdown("**required*")
+    def is_valid_indian_number(Phone):
+       pattern = re.compile(r"^[6-9]\d{9}$")
+       return bool(pattern.match(Phone))
 
     submit_button = st.form_submit_button(label="Submit Details")
 
@@ -75,7 +79,7 @@ with st.form(key="vendor_form"):
             st.warning("Ensure all mandatory fields are filled.")
             st.stop()
         elif existing_data["Phone"].str.contains(Phone).any():
-            st.warning("A vendor with this company name already exists.")
+            st.warning("Phone number already exists.")
             st.stop()
         else:
             # Create a new row of vendor data
@@ -88,9 +92,9 @@ with st.form(key="vendor_form"):
                         "Distributor": Distributor,
                         "Dealer": Dealer,
                         "City": City,
-                        "Products": ", ".join(products),
-                        "Colors": ", ".join(products),
-                        "Sizes": ", ".join(products),
+                        "Products": ", ".join(PRODUCTS),
+                        "Colors": ", ".join(COLORS),
+                        "Sizes": ", ".join(SIZES),
                         "Quantity": Quantity,
                         "Display date": Dateofdisplay.strftime("%Y-%m-%d"),
                         "Invoice": InvoiceDoc,
@@ -105,5 +109,5 @@ with st.form(key="vendor_form"):
             # Update Google Sheets with the new vendor data
             conn.update(worksheet="dealer", data=updated_df)
 
-            st.success("Vendor details successfully submitted!")
+            st.success("Details successfully submitted!")
 
