@@ -49,7 +49,7 @@ with st.form(key="vendor_form"):
         if not company_name or not business_type:
             st.warning("Ensure all mandatory fields are filled.")
             st.stop()
-        elif existing_data["CompanyName"].str.contains(company_name).any():
+        elif existing_data["Phone"].str.contains(company_name).any():
             st.warning("A vendor with this company name already exists.")
             st.stop()
         else:
