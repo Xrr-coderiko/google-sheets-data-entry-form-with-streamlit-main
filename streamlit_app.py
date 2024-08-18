@@ -75,14 +75,11 @@ with st.form(key="vendor_form"):
         # Check if all mandatory fields are filled
         pattern = re.compile(r"^[6-9]\d{9}$")
         is_valid = bool(pattern.match(Phone))
-        st.warning("Incorrect Phone Number.")
-        matter = re.compile(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
-        is_valid = bool(matter.match(Email))
-        
+        st.warning("Incorrect Phone Number.") 
         if not Name or not Phone or not Distributor or not Dealer or not City or not Dateofdisplay or not InvoiceDoc or not DisplayImage:
             st.warning("Ensure all mandatory fields are filled.")
             st.stop()
-        elif existing_data["Phone"].str.contains(Phone).any():
+        elif existing_data["Phone"] in Phone:
             st.warning("Phone number already exists.")
             st.stop()
         else:
