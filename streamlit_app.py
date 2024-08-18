@@ -49,7 +49,7 @@ with st.form(key="vendor_form"):
         if not company_name or not business_type:
             st.warning("Ensure all mandatory fields are filled.")
             st.stop()
-        elif existing_data["Phone"].str.contains(company_name).any():
+        elif existing_data["Name"].str.contains(company_name).any():
             st.warning("A vendor with this company name already exists.")
             st.stop()
         else:
@@ -57,7 +57,7 @@ with st.form(key="vendor_form"):
             vendor_data = pd.DataFrame(
                 [
                     {
-                        "CompanyName": company_name,
+                        "Name": company_name,
                         "BusinessType": business_type,
                         "Products": ", ".join(products),
                         "YearsInBusiness": years_in_business,
@@ -71,7 +71,7 @@ with st.form(key="vendor_form"):
             updated_df = pd.concat([existing_data, vendor_data], ignore_index=True)
 
             # Update Google Sheets with the new vendor data
-            conn.update(worksheet="Vendors", data=updated_df)
+            conn.update(worksheet="Dealer", data=updated_df)
 
             st.success("Vendor details successfully submitted!")
 
