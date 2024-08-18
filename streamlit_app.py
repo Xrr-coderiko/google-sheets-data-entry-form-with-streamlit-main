@@ -2,6 +2,7 @@ import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 import re
+import gspread
 
 # Display Title and Description
 # st.image("./VOXlogo.jpeg",width=500,)
@@ -79,9 +80,11 @@ with st.form(key="vendor_form"):
         if not Name or not Phone or not Distributor or not Dealer or not City or not Dateofdisplay or not InvoiceDoc or not DisplayImage:
             st.warning("Ensure all mandatory fields are filled.")
             st.stop()
-        elif existing_data["Phone"] == Phone:
-            st.warning("Phone number already exists.")
-            st.stop()
+        elif Phone in existing_data["Phone"].astype(str).values:
+              st.warning("Phone number already exists.")                
+        #elif existing_data["Phone"] == Phone:
+         #   st.warning("Phone number already exists.")
+          #  st.stop()
         else:
             # Create a new row of vendor data
             vendor_data = pd.DataFrame(
