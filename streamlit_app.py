@@ -74,12 +74,11 @@ with st.form(key="vendor_form"):
     if submit_button:
         # Check if all mandatory fields are filled
         pattern = re.compile(r"^[6-9]\d{9}$")
-        for number in Phone:
-           is_valid = bool(pattern.match(number))
-           st.warning("Incorrect Phone Number.")
+        is_valid = bool(pattern.match(Phone))
+        st.warning("Incorrect Phone Number.")
         matter = re.compile(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
-        for email in Email:
-           is_valid = bool(matter.match(email))
+        is_valid = bool(matter.match(Email))
+        
         if not Name or not Phone or not Distributor or not Dealer or not City or not Dateofdisplay or not InvoiceDoc or not DisplayImage:
             st.warning("Ensure all mandatory fields are filled.")
             st.stop()
