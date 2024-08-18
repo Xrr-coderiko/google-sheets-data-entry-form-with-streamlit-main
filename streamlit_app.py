@@ -3,6 +3,7 @@ from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 
 # Display Title and Description
+st.image("./VOXlogo.jpeg",width=250)
 st.title("VOX Dealership form")
 st.markdown("Enter the details of the new vendor below.")
 
@@ -22,11 +23,15 @@ BUSINESS_TYPES = [
     "Service Provider",
 ]
 PRODUCTS = [
-    "Electronics",
-    "Apparel",
-    "Groceries",
-    "Software",
-    "Other",
+    "Soffit",
+    "Fronto",
+    "MAX-3",
+    "SPC",
+    "Kerradeco",
+    "Kerrafront",
+    "Espumo",
+    "J Trims",
+    "T Trims",
 ]
 
 # Onboarding New Vendor Form
