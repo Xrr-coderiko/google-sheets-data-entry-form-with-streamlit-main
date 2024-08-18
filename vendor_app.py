@@ -22,7 +22,7 @@ PRODUCTS = [
 ]
 
 # Establishing a Google Sheets connection
-conn = st.experimental_connection("gsheets", type=GSheetsConnection)
+conn = st.connection("gsheets", type=GSheetsConnection)
 
 # Fetch existing vendors data
 existing_data = conn.read(worksheet="dealer", usecols=list(range(6)), ttl=5)
@@ -56,13 +56,13 @@ if action == "Onboard New Vendor":
         if submit_button:
             if not company_name or not business_type:
                 st.warning("Ensure all mandatory fields are filled.")
-            elif existing_data["CompanyName"].str.contains(company_name).any():
+            elif existing_data["Name"].str.contains(company_name).any():
                 st.warning("A vendor with this company name already exists.")
             else:
                 vendor_data = pd.DataFrame(
                     [
                         {
-                            "CompanyName": company_name,
+                            "Name": company_name,
                             "BusinessType": business_type,
                             "Products": ", ".join(products),
                             "YearsInBusiness": years_in_business,
@@ -72,22 +72,22 @@ if action == "Onboard New Vendor":
                     ]
                 )
                 updated_df = pd.concat([existing_data, vendor_data], ignore_index=True)
-                conn.update(worksheet="Vendors", data=updated_df)
+                conn.update(worksheet="dealer", data=updated_df)
                 st.success("Vendor details successfully submitted!")
 
 elif action == "Update Existing Vendor":
     st.markdown("Select a vendor and update their details.")
 
     vendor_to_update = st.selectbox(
-        "Select a Vendor to Update", options=existing_data["CompanyName"].tolist()
+        "Select a Vendor to Update", options=existing_data["Name"].tolist()
     )
-    vendor_data = existing_data[existing_data["CompanyName"] == vendor_to_update].iloc[
+    vendor_data = existing_data[existing_data["Name"] == vendor_to_update].iloc[
         0
     ]
 
     with st.form(key="update_form"):
         company_name = st.text_input(
-            label="Company Name*", value=vendor_data["CompanyName"]
+            label="Company Name*", value=vendor_data["Name"]
         )
         business_type = st.selectbox(
             "Business Type*",
@@ -119,7 +119,7 @@ elif action == "Update Existing Vendor":
                 # Removing old entry
                 existing_data.drop(
                     existing_data[
-                        existing_data["CompanyName"] == vendor_to_update
+                        existing_data["Name"] == vendor_to_update
                     ].index,
                     inplace=True,
                 )
@@ -127,7 +127,7 @@ elif action == "Update Existing Vendor":
                 updated_vendor_data = pd.DataFrame(
                     [
                         {
-                            "CompanyName": company_name,
+                            "Name": company_name,
                             "BusinessType": business_type,
                             "Products": ", ".join(products),
                             "YearsInBusiness": years_in_business,
@@ -140,7 +140,7 @@ elif action == "Update Existing Vendor":
                 updated_df = pd.concat(
                     [existing_data, updated_vendor_data], ignore_index=True
                 )
-                conn.update(worksheet="Vendors", data=updated_df)
+                conn.update(worksheet="dealer", data=updated_df)
                 st.success("Vendor details successfully updated!")
 
 # View All Vendors
@@ -150,13 +150,13 @@ elif action == "View All Vendors":
 # Delete Vendor
 elif action == "Delete Vendor":
     vendor_to_delete = st.selectbox(
-        "Select a Vendor to Delete", options=existing_data["CompanyName"].tolist()
+        "Select a Vendor to Delete", options=existing_data["Name"].tolist()
     )
 
     if st.button("Delete"):
         existing_data.drop(
-            existing_data[existing_data["CompanyName"] == vendor_to_delete].index,
+            existing_data[existing_data["Name"] == vendor_to_delete].index,
             inplace=True,
         )
-        conn.update(worksheet="Vendors", data=existing_data)
+        conn.update(worksheet="dealer", data=existing_data)
         st.success("Vendor successfully deleted!")
