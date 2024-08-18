@@ -66,15 +66,20 @@ with st.form(key="vendor_form"):
 
     # Mark mandatory fields
     st.markdown("**required*")
-    def is_valid_indian_number(Phone):
-       pattern = re.compile(r"^[6-9]\d{9}$")
-       return bool(pattern.match(Phone))
+
 
     submit_button = st.form_submit_button(label="Submit Details")
 
     # If the submit button is pressed
     if submit_button:
         # Check if all mandatory fields are filled
+        pattern = re.compile(r"^[6-9]\d{9}$")
+        for number in Phone:
+           is_valid = bool(pattern.match(number))
+           st.warning("Incorrect Phone Number.")
+        matter = re.compile(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
+        for email in Email:
+           is_valid = bool(matter.match(email))
         if not Name or not Phone or not Distributor or not Dealer or not City or not Dateofdisplay or not InvoiceDoc or not DisplayImage:
             st.warning("Ensure all mandatory fields are filled.")
             st.stop()
@@ -92,9 +97,9 @@ with st.form(key="vendor_form"):
                         "Distributor": Distributor,
                         "Dealer": Dealer,
                         "City": City,
-                        "Products": ", ".join(PRODUCTS),
-                        "Colors": ", ".join(COLORS),
-                        "Sizes": ", ".join(SIZES),
+                        "Products": ", ".join(products),
+                        "Colors": ", ".join(colors),
+                        "Sizes": ", ".join(Size),
                         "Quantity": Quantity,
                         "Display date": Dateofdisplay.strftime("%Y-%m-%d"),
                         "Invoice": InvoiceDoc,
