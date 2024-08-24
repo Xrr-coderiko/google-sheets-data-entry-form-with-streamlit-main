@@ -61,7 +61,7 @@ with st.form(key="vendor_form"):
     product_list, color_list, size_list, quantity_list = [], [], [], []
     for row in range(num_rows):
        with grid[0]:
-           product_list.append(st.selectbox(label=f"Product{row}",index=None, options=PRODUCTS, key=f'input_product{row}'))
+           product_list.append(st.selectbox(label=f"Product {row+1}",index=None, options=PRODUCTS, key=f'input_product{row}'))
        with grid[1]:
            color_list.append(st.selectbox(label="Color",index=None, options=COLORS, key=f'input_color{row}'))
        with grid[2]:
