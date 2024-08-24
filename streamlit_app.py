@@ -48,17 +48,7 @@ SIZES = [
 ]
 
 pattern = re.compile(r"^[6-9]\d{9}$")
-if 'num_rows' not in st.session_state:
-    st.session_state.num_rows = 1
 
-# Function to add a new row
-def add_row():
-    st.session_state.num_rows += 1
-
-# Function to remove the last row
-def remove_row():
-    if st.session_state.num_rows > 1:
-        st.session_state.num_rows -= 1
 
 # Onboarding New Vendor Form
 with st.form(key="vendor_form"):
