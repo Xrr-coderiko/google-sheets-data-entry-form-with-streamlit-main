@@ -59,19 +59,31 @@ with st.form(key="vendor_form"):
     Distributor = st.text_input(label="Distributor Name*")
     Dealer = st.text_input(label="Dealer Name*")
     City = st.text_input(label="City*")
-    products = st.multiselect("Products*", options=PRODUCTS)
-    colors = st.multiselect("Decor*", options=COLORS)
-    Size = st.multiselect("Panel sizes*", options=SIZES)
+    num_rows = st.slider('Number of rows', min_value=1, max_value=10)
+    grid = st.columns(4)
+    product_list, color_list, size_list, quantity_list = [], [], [], []
+    for row in range(num_rows):
+       with grid[0]:
+           product_list.append(st.selectbox(label="Product", options=PRODUCTS, key=f'input_product{row}'))
+       with grid[1]:
+           color_list.append(st.selectbox(label="Color", options=COLORS, key=f'input_color{row}'))
+       with grid[2]:
+           size_list.append(st.selectbox(label="Size", options=SIZES, key=f'input_size{row}'))
+       with grid[3]:
+           quantity_list.append(st.text_input(label="Quantity", key=f'input_quantity{row}'))
     Quantity = st.text_input(label="Quantity of panels*")
     Dateofdisplay = st.date_input(label="Date of display executed*")
     InvoiceDoc = st.file_uploader(label="Upload Invoice copy*")
     DisplayImage = st.file_uploader(label="Upload Display images*")
+    
 
     # Mark mandatory fields
     st.markdown("**required*")
 
 
     submit_button = st.form_submit_button(label="Submit Details")
+    
+
 
     # If the submit button is pressed
     if submit_button:
@@ -81,9 +93,9 @@ with st.form(key="vendor_form"):
             st.warning("Ensure all mandatory fields are filled.")
             st.stop()
         elif not is_valid:
-            st.warning("Incorrect Phone Number or already exist.")
+            st.warning("Incorrect Phone Number")
         elif Phone in existing_data["Phone"].astype(str).values:
-            st.warning("Phone number already exists.")           
+            st.warning("Phone number already exists.")             
         else:
             # Create a new row of vendor data
             vendor_data = pd.DataFrame(
@@ -95,10 +107,10 @@ with st.form(key="vendor_form"):
                         "Distributor": Distributor,
                         "Dealer": Dealer,
                         "City": City,
-                        "Products": ", ".join(products),
-                        "Colors": ", ".join(colors),
-                        "Sizes": ", ".join(Size),
-                        "Quantity": Quantity,
+                        "Products": ", ".join(product_list),
+                        "Colors": ", ".join(color_list),
+                        "Sizes": ", ".join(size_list),
+                        "Quantity": ", ".join(quantity_list),
                         "Display date": Dateofdisplay.strftime("%Y-%m-%d"),
                         "Invoice": InvoiceDoc,
                         "Display Image": DisplayImage, 
