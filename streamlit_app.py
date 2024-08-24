@@ -2,22 +2,14 @@ import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 import re
-from pydrive.auth import GoogleAuth
-from pydrive.drive import GoogleDrive
 
-gauth = GoogleAuth()
-gauth.LocalWebserverAuth()  # Authenticate and create the PyDrive client
-drive = GoogleDrive(gauth)
-
-# Display Title and Description
 # st.image("./VOXlogo.jpeg",width=500,)
 st.title("VOX Dealer Display")
 st.markdown("Details to collect Credit Note")
 
-# Establishing a Google Sheets connection
+
 conn = st.connection("gsheets", type=GSheetsConnection)
 
-# Fetch existing vendors data
 existing_data = conn.read(worksheet="dealer", usecols=list(range(13)), ttl=5)
 existing_data = existing_data.dropna(how="all")
 
@@ -88,18 +80,6 @@ with st.form(key="vendor_form"):
 
     submit_button = st.form_submit_button(label="Submit Details")
     
-    def upload_to_drive(file):
-        if file:
-            file_drive = drive.CreateFile({'title': file.name})
-            file_drive.Upload({'data': file})
-            return file_drive['id']
-        return None
-
-    def get_file_link(file_id):
-        if file_id:
-            return f"https://drive.google.com/file/d/{file_id}/view"
-        return ""
-
 
 
     # If the submit button is pressed
@@ -114,12 +94,7 @@ with st.form(key="vendor_form"):
         elif Phone in existing_data["Phone"].astype(str).values:
             st.warning("Phone number already exists.")             
         else:
-            invoice_file_id = upload_to_drive(InvoiceDoc)
-            display_image_file_id = upload_to_drive(DisplayImage)
             
-            # Get file links
-            invoice_link = get_file_link(invoice_file_id)
-            display_image_link = get_file_link(display_image_file_id)
             vendor_data = pd.DataFrame(
                 [
                     {
@@ -134,8 +109,8 @@ with st.form(key="vendor_form"):
                         "Sizes": ", ".join(size_list),
                         "Quantity": ", ".join(quantity_list),
                         "Display date": Dateofdisplay.strftime("%Y-%m-%d"),
-                        "Invoice": invoice_link,
-                        "Display Image": display_image_link, 
+                        "Invoice": InvoiceDoc,
+                        "Display Image": Dateofdisplay, 
                     }
                 ]
             )
