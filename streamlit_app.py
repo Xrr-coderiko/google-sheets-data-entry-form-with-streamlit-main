@@ -2,21 +2,12 @@ import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 import re
-from google.oauth2 import service_account
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaFileUpload
-import tempfile
+from pydrive.auth import GoogleAuth
+from pydrive.drive import GoogleDrive
 
-SERVICE_ACCOUNT_FILE = 'secrets.toml'
-
-credentials = service_account.Credentials.from_service_account_file(
-    SERVICE_ACCOUNT_FILE,
-    scopes=["https://www.googleapis.com/auth/drive", "https://www.googleapis.com/auth/spreadsheets"]
-)
-
-drive_service = build('drive', 'v3', credentials=credentials)
-sheets_service = build('sheets', 'v4', credentials=credentials)
-
+gauth = GoogleAuth()
+gauth.LocalWebserverAuth()  # Authenticate and create the PyDrive client
+drive = GoogleDrive(gauth)
 
 # Display Title and Description
 # st.image("./VOXlogo.jpeg",width=500,)
@@ -65,18 +56,6 @@ SIZES = [
 
 pattern = re.compile(r"^[6-9]\d{9}$")
 
-def upload_to_drive(file):
-    with tempfile.NamedTemporaryFile(delete=False) as temp:
-        temp.write(file.getbuffer())
-        temp_path = temp.name
-    
-    file_metadata = {'name': file.name, 'parents': ['https://drive.google.com/drive/folders/1xX6CikQ3zUhwL-CLQSYWgc2GhAo-yeBg?usp=drive_link']}  # Replace with your Google Drive folder ID
-    media = MediaFileUpload(temp_path, resumable=True)
-    uploaded_file = drive_service.files().create(body=file_metadata, media_body=media, fields='id').execute()
-    file_id = uploaded_file.get('id')
-    file_link = f"https://drive.google.com/file/d/{file_id}/view?usp=sharing"
-    return file_link
-
 # Onboarding New Vendor Form
 with st.form(key="vendor_form"):
     Name = st.text_input(label="Indent Raised By*")
@@ -109,6 +88,18 @@ with st.form(key="vendor_form"):
 
     submit_button = st.form_submit_button(label="Submit Details")
     
+    def upload_to_drive(file):
+        if file:
+            file_drive = drive.CreateFile({'title': file.name})
+            file_drive.Upload({'data': file})
+            return file_drive['id']
+        return None
+
+    def get_file_link(file_id):
+        if file_id:
+            return f"https://drive.google.com/file/d/{file_id}/view"
+        return ""
+
 
 
     # If the submit button is pressed
@@ -123,9 +114,12 @@ with st.form(key="vendor_form"):
         elif Phone in existing_data["Phone"].astype(str).values:
             st.warning("Phone number already exists.")             
         else:
-            invoice_link = upload_to_drive(InvoiceDoc)
-            display_image_link = upload_to_drive(DisplayImage)
-            # Create a new row of vendor data
+            invoice_file_id = upload_to_drive(InvoiceDoc)
+            display_image_file_id = upload_to_drive(DisplayImage)
+            
+            # Get file links
+            invoice_link = get_file_link(invoice_file_id)
+            display_image_link = get_file_link(display_image_file_id)
             vendor_data = pd.DataFrame(
                 [
                     {
