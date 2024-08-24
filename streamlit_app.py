@@ -1,6 +1,5 @@
 import streamlit as st
 from streamlit_gsheets import GSheetsConnection
-from st_aggrid import AgGrid
 import pandas as pd
 import re
 
@@ -60,7 +59,6 @@ with st.form(key="vendor_form"):
     City = st.text_input(label="City*")
     #num_rows = st.slider('Number of rows', min_value=1, max_value=10)
     grid = st.columns(4)
-    AgGrid(grid)
     product_list, color_list, size_list, quantity_list = [], [], [], []
     for row in range(st.session_state.num_rows):
        with grid[0]:
