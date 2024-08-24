@@ -57,7 +57,7 @@ with st.form(key="vendor_form"):
     Distributor = st.text_input(label="Distributor Name*")
     Dealer = st.text_input(label="Dealer Name*")
     City = st.text_input(label="City*")
-    num_rows = st.text_input(label='Number of VOX Products',)
+    num_rows = st.text_input(label='Number of VOX Products')
     grid = st.columns(4)
     product_list, color_list, size_list, quantity_list = [], [], [], []
     for row in range(num_rows):
@@ -69,8 +69,6 @@ with st.form(key="vendor_form"):
            size_list.append(st.selectbox(label="Size",index=None, options=SIZES, key=f'input_size{row}'))
        with grid[3]:
            quantity_list.append(st.text_input(label="Quantity", key=f'input_quantity{row}'))
-
-    
     Dateofdisplay = st.date_input(label="Date of display executed*")
     InvoiceDoc = st.file_uploader(label="Upload Invoice copy*")
     DisplayImage = st.file_uploader(label="Upload Display images*")
@@ -79,11 +77,8 @@ with st.form(key="vendor_form"):
     # Mark mandatory fields
     st.markdown("**required*")
 
-
     submit_button = st.form_submit_button(label="Submit Details")
-    
-
-
+ 
     # If the submit button is pressed
     if submit_button:
         # Check if all mandatory fields are filled
