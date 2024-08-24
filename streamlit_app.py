@@ -57,10 +57,10 @@ with st.form(key="vendor_form"):
     Distributor = st.text_input(label="Distributor Name*")
     Dealer = st.text_input(label="Dealer Name*")
     City = st.text_input(label="City*")
-    #num_rows = st.slider('Number of rows', min_value=1, max_value=10)
+    num_rows = st.text_input('Number of VOX Products', min_value=1, max_value=10)
     grid = st.columns(4)
     product_list, color_list, size_list, quantity_list = [], [], [], []
-    for row in range(st.session_state.num_rows):
+    for row in range(num_rows):
        with grid[0]:
            product_list.append(st.selectbox(label=f"Product {row+1}",index=None, options=PRODUCTS, key=f'input_product{row}'))
        with grid[1]:
