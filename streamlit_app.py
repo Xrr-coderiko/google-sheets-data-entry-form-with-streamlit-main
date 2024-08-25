@@ -2,33 +2,37 @@ import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 import re
-from pydrive2.auth import GoogleAuth
-from pydrive2.drive import GoogleDrive
 from google.oauth2 import service_account
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
 
+# Set up Google Drive API authentication
 def authenticate_drive():
     credentials = service_account.Credentials.from_service_account_info(
         st.secrets["connections.gsheets"],
         scopes=["https://www.googleapis.com/auth/drive.file"]
     )
-    gauth = GoogleAuth()
-    gauth.credentials = credentials
-    drive = GoogleDrive(gauth)
-    return drive
+    service = build('drive', 'v3', credentials=credentials)
+    return service
 
-def upload_to_drive(file, drive):
+# Upload file to a specific Google Drive folder and return the file ID
+def upload_to_drive(file, drive_service, folder_id):
     if file is not None:
-        file_drive = drive.CreateFile({'title': file.name,'parents': [{'id': folder_id}]})
-        file_drive.SetContentString(file.getvalue().decode("utf-8"))  # Adjust for file type
-        file_drive.Upload()
-        file_drive.InsertPermission({
-            'type': 'anyone',
-            'value': 'anyone',
-            'role': 'reader'
-        })
-        return file_drive['id']
+        file_metadata = {
+            'name': file.name,
+            'parents': [folder_id]  # Set the parent folder ID
+        }
+        media = MediaFileUpload(file.name, resumable=True)
+        file_drive = drive_service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+        
+        # Make the file publicly accessible
+        drive_service.permissions().create(
+            fileId=file_drive.get('id'),
+            body={'type': 'anyone', 'role': 'reader'}
+        ).execute()
+        
+        return file_drive.get('id')
     return None
-
 st.image("./VOXlogo.jpeg",width=500,)
 st.title("VOX Dealer Display")
 st.markdown("Details to collect Credit Note")
