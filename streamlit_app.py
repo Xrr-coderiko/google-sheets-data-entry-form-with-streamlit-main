@@ -2,37 +2,6 @@ import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 import re
-from google.oauth2 import service_account
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaFileUpload
-
-# Set up Google Drive API authentication
-def authenticate_drive():
-    credentials = service_account.Credentials.from_service_account_info(
-        st.secrets["connections.gsheets"],
-        scopes=["https://www.googleapis.com/auth/drive.file"]
-    )
-    service = build('drive', 'v3', credentials=credentials)
-    return service
-
-# Upload file to a specific Google Drive folder and return the file ID
-def upload_to_drive(file, drive_service, folder_id):
-    if file is not None:
-        file_metadata = {
-            'name': file.name,
-            'parents': [folder_id]  # Set the parent folder ID
-        }
-        media = MediaFileUpload(file.name, resumable=True)
-        file_drive = drive_service.files().create(body=file_metadata, media_body=media, fields='id').execute()
-        
-        # Make the file publicly accessible
-        drive_service.permissions().create(
-            fileId=file_drive.get('id'),
-            body={'type': 'anyone', 'role': 'reader'}
-        ).execute()
-        
-        return file_drive.get('id')
-    return None
 st.image("./VOXlogo.jpeg",width=500,)
 st.title("VOX Dealer Display")
 st.markdown("Details to collect Credit Note")
@@ -77,9 +46,6 @@ SIZES = [
 ]
 
 pattern = re.compile(r"^[6-9]\d{9}$")
-
-drive = authenticate_drive()
-folder_id = "https://docs.google.com/spreadsheets/d/1_U2XQb4dhr-hlrCWDO2mOaGYbF0lDtyfK5KfFzcBdZ4/edit?usp=drive_link"
 
 # Onboarding New Vendor Form
 with st.form(key="vendor_form"):
@@ -130,8 +96,6 @@ with st.form(key="vendor_form"):
         elif Phone in existing_data["Phone"].astype(str).values:
             st.warning("Phone number already exists.")             
         else:
-            invoice_link = f"https://drive.google.com/file/d/{upload_to_drive(InvoiceDoc, drive)}/view" if InvoiceDoc else ""
-            display_image_link = f"https://drive.google.com/file/d/{upload_to_drive(DisplayImage, drive)}/view" if DisplayImage else ""
 
             
             vendor_data = pd.DataFrame(
@@ -148,8 +112,8 @@ with st.form(key="vendor_form"):
                         "Sizes": ", ".join(size_list),
                         "Quantity": ", ".join(quantity_list),
                         "Display date": Dateofdisplay.strftime("%Y-%m-%d"),
-                        "Invoice": invoice_link,
-                        "Display Image": display_image_link, 
+                        "Invoice": InvoiceDoc,
+                        "Display Image": DisplayImage, 
                     }
                 ]
             )
