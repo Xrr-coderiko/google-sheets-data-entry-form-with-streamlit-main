@@ -56,7 +56,7 @@ with st.form(key="vendor_form"):
     Distributor = st.text_input(label="Distributor Name*")
     Dealer = st.text_input(label="Dealer Name*")
     City = st.text_input(label="City*")
-    num_rows = st.number_input(lable=None, placeholder="Number of rows", min_value = 1, max_value = 10)
+    num_rows = st.number_input(lable="Number of rows", min_value = 1, max_value = 10)
     grid = st.columns(4)
     product_list, color_list, size_list, quantity_list = [], [], [], []
     for row in range(num_rows):
