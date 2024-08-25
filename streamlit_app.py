@@ -29,7 +29,7 @@ def upload_to_drive(file, drive):
         return file_drive['id']
     return None
 
-# st.image("./VOXlogo.jpeg",width=500,)
+st.image("./VOXlogo.jpeg",width=500,)
 st.title("VOX Dealer Display")
 st.markdown("Details to collect Credit Note")
 
