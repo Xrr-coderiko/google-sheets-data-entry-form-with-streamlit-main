@@ -2,6 +2,32 @@ import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 import re
+from pydrive2.auth import GoogleAuth
+from pydrive2.drive import GoogleDrive
+from google.oauth2 import service_account
+
+def authenticate_drive():
+    credentials = service_account.Credentials.from_service_account_info(
+        st.secrets["connections.gsheets"],
+        scopes=["https://www.googleapis.com/auth/drive.file"]
+    )
+    gauth = GoogleAuth()
+    gauth.credentials = credentials
+    drive = GoogleDrive(gauth)
+    return drive
+
+def upload_to_drive(file, drive):
+    if file is not None:
+        file_drive = drive.CreateFile({'title': file.name,'parents': [{'id': folder_id}]})
+        file_drive.SetContentString(file.getvalue().decode("utf-8"))  # Adjust for file type
+        file_drive.Upload()
+        file_drive.InsertPermission({
+            'type': 'anyone',
+            'value': 'anyone',
+            'role': 'reader'
+        })
+        return file_drive['id']
+    return None
 
 # st.image("./VOXlogo.jpeg",width=500,)
 st.title("VOX Dealer Display")
@@ -48,6 +74,9 @@ SIZES = [
 
 pattern = re.compile(r"^[6-9]\d{9}$")
 
+drive = authenticate_drive()
+folder_id = "https://docs.google.com/spreadsheets/d/1_U2XQb4dhr-hlrCWDO2mOaGYbF0lDtyfK5KfFzcBdZ4/edit?usp=drive_link"
+
 # Onboarding New Vendor Form
 with st.form(key="vendor_form"):
     Name = st.text_input(label="Indent Raised By*")
@@ -59,20 +88,22 @@ with st.form(key="vendor_form"):
     num_rows = st.number_input(label="Number of VOX Products", min_value = 1, max_value = 10)
     grid = st.columns(4)
     product_list, color_list, size_list, quantity_list = [], [], [], []
-    for row in range(num_rows):
-       with grid[0]:
+    def addrow():
+     for row in range(num_rows):
+        with grid[0]:
            product_list.append(st.selectbox(label=f"Product {row+1}",placeholder="select product", options=PRODUCTS, key=f'input_product{row}'))
-       with grid[1]:
+        with grid[1]:
            color_list.append(st.selectbox(label="Color", options=COLORS, key=f'input_color{row}'))
-       with grid[2]:
+        with grid[2]:
            size_list.append(st.selectbox(label="Size", options=SIZES, key=f'input_size{row}'))
-       with grid[3]:
+        with grid[3]:
            quantity_list.append(st.text_input(label="Quantity", key=f'input_quantity{row}'))
            
     
     Dateofdisplay = st.date_input(label="Date of display executed*")
     InvoiceDoc = st.file_uploader(label="Upload Invoice copy*")
     DisplayImage = st.file_uploader(label="Upload Display images*")
+    
     
 
     # Mark mandatory fields
@@ -95,6 +126,9 @@ with st.form(key="vendor_form"):
         elif Phone in existing_data["Phone"].astype(str).values:
             st.warning("Phone number already exists.")             
         else:
+            invoice_link = f"https://drive.google.com/file/d/{upload_to_drive(InvoiceDoc, drive)}/view" if InvoiceDoc else ""
+            display_image_link = f"https://drive.google.com/file/d/{upload_to_drive(DisplayImage, drive)}/view" if DisplayImage else ""
+
             
             vendor_data = pd.DataFrame(
                 [
@@ -110,8 +144,8 @@ with st.form(key="vendor_form"):
                         "Sizes": ", ".join(size_list),
                         "Quantity": ", ".join(quantity_list),
                         "Display date": Dateofdisplay.strftime("%Y-%m-%d"),
-                        "Invoice": InvoiceDoc,
-                        "Display Image": Dateofdisplay, 
+                        "Invoice": invoice_link,
+                        "Display Image": display_image_link, 
                     }
                 ]
             )
