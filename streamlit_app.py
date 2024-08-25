@@ -55,8 +55,10 @@ with st.form(key="vendor_form"):
     Distributor = st.text_input(label="Distributor Name*")
     Dealer = st.text_input(label="Dealer Name*")
     City = st.text_input(label="City*")
-    def addrow(num_rows):
-     for row in range(num_rows):
+    grid = st.columns(4)
+    num_rows = st.number_input(label="Number of VOX Products", on_change=grid, min_value = 1, max_value = 10)
+    product_list, color_list, size_list, quantity_list = [], [], [], []
+    for row in range(num_rows):
         with grid[0]:
            product_list.append(st.selectbox(label=f"Product {row+1}",placeholder="select product", options=PRODUCTS, key=f'input_product{row}'))
         with grid[1]:
@@ -65,11 +67,7 @@ with st.form(key="vendor_form"):
            size_list.append(st.selectbox(label="Size", options=SIZES, key=f'input_size{row}'))
         with grid[3]:
            quantity_list.append(st.text_input(label="Quantity", key=f'input_quantity{row}'))
-          
-    num_rows = st.number_input(label="Number of VOX Products", on_change=addrow, min_value = 1, max_value = 10)
-    grid = st.columns(4)
-    product_list, color_list, size_list, quantity_list = [], [], [], []
-  
+           
     
     Dateofdisplay = st.date_input(label="Date of display executed*")
     InvoiceDoc = st.file_uploader(label="Upload Invoice copy*")
