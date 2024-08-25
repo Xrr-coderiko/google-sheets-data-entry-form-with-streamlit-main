@@ -55,8 +55,8 @@ with st.form(key="vendor_form"):
     Distributor = st.text_input(label="Distributor Name*")
     Dealer = st.text_input(label="Dealer Name*")
     City = st.text_input(label="City*")
-    grid = st.columns(4)
     num_rows = st.number_input(label="Number of VOX Products", on_change=grid, min_value = 1, max_value = 10)
+    grid = st.columns(4)
     product_list, color_list, size_list, quantity_list = [], [], [], []
     for row in range(num_rows):
         with grid[0]:
