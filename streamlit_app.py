@@ -2,7 +2,7 @@ import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 import re
-st.image("./VOXlogo.jpeg",width=500,)
+#st.image("./VOXlogo.jpeg",width=500,)
 st.title("VOX Dealer Display")
 st.markdown("Details to collect Credit Note")
 
